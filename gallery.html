@@ -1,0 +1,157 @@
+<html lang="en">
+<head>
+<meta charset="utf-8">
+    
+<title>Heightmap Visualisation: Gallery</title>
+<meta name="description" content="Three.js Example">
+<meta name="author" content="Vladimir V. KUCHINOV">  
+
+<style>
+    
+body{
+
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    margin: 0px;
+    padding: 0px;
+    background-color: #DEDEDE;
+    
+}
+  
+div.gallery {
+    margin: 5px;
+    border: 1px solid #ccc;
+    float: left;
+    width: 180px;
+}
+
+div.gallery:hover {
+    border: 1px solid #FF00FF;
+}
+
+div.gallery img {
+    width: 100%;
+    height: auto;
+}
+
+div.desc {
+    padding: 15px;
+    text-align: center;
+}
+    
+.modal {
+    display: none; 
+    position: fixed; 
+    z-index: 1; 
+    padding-top: 50px; 
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%; 
+    overflow: auto; 
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: #FFFFFF;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    height: 80%;
+}
+
+    
+
+#threeScene {
+  width: 100px;
+  height: 100px;
+  position: relative;
+}
+    
+#HUD {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0px ;
+  left: 0px;
+  z-index: 10;
+}
+ 
+.close {
+    color: #aaaaaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+</style>
+    
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+
+<!-- THREE.JS & its libraries -->
+<script src="js/three.min.js"></script>
+<script src="js/CombinedCamera.js"></script>
+<script src="js/meshwalk.min.js"></script>
+<script src="js/meshwalk.TPS.min.js"></script>
+<script src="js/dat.gui.min.js"></script>
+
+</head>
+    
+<body>
+
+<div id="group">
+    
+        <div class="gallery">
+            <img id="01" src="gallery/01.jpg" alt="Britannia" width="200" height="200">
+          <div class="desc">Britannia</div>
+        </div>
+
+        <div class="gallery">
+            <img id="02" src="gallery/02.jpg" alt="The Strait" width="200" height="200">
+          <div class="desc">The Strait</div>
+        </div>
+        <div class="gallery">
+            <img id="03" src="gallery/03.jpg" alt="Mystery Terrain" width="200" height="200">
+          <div class="desc">Mystery Terrain</div>
+        </div>
+
+        <div class="gallery">
+            <img id="04" src="gallery/04.jpg" alt="Isle" width="300" height="200">
+          <div class="desc">Isle</div>
+        </div>
+        <div class="gallery">
+            <img id="05" src="gallery/05.jpg" alt="The UK" width="200" height="200">
+          <div class="desc">The UK</div>
+        </div>
+        <div class="gallery">
+            <img id="06" src="gallery/06.jpg" alt="Italy" width="300" height="200">
+          <div class="desc">Italy</div>
+        </div>
+</div>
+
+<div id="modalThree" class="modal">
+
+    <div id="content" class="modal-content">
+        <span id="modalClose" class="close">&times;</span>
+        <div id="threeScene">
+            <div id="container"></div>
+            <div id="HUD"></div>
+        </div> 
+    </div>
+
+</div>
+    
+<script src="js/mainGallery.js"></script>
+   
+</body>
+</html>
