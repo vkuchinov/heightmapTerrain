@@ -269,16 +269,16 @@ function customPlane(texture_, width_, height_, size_){
             var nextZIndex = (z + 1) * heightSegments_;
             
             var faceA = new THREE.Face3(zIndex + x, nextZIndex + x + 1,  zIndex + x + 1);
-            faceA.vertexColors[0] = colors[zIndex + x];
-            faceA.vertexColors[1] = colors[nextZIndex + x + 1];
-            faceA.vertexColors[2] = colors[zIndex + x + 1];
+            //faceA.vertexColors[0] = colors[zIndex + x];
+            //faceA.vertexColors[1] = colors[nextZIndex + x + 1];
+            //faceA.vertexColors[2] = colors[zIndex + x + 1];
             
             geometry.faces.push(faceA);
             
             var faceB = new THREE.Face3(zIndex + x, nextZIndex + x, nextZIndex + x + 1);
-            faceB.vertexColors[0] = colors[zIndex + x];
-            faceB.vertexColors[1] = colors[nextZIndex + x];
-            faceB.vertexColors[2] = colors[nextZIndex + x + 1];
+            //faceB.vertexColors[0] = colors[zIndex + x];
+            //faceB.vertexColors[1] = colors[nextZIndex + x];
+            //faceB.vertexColors[2] = colors[nextZIndex + x + 1];
             
             geometry.faces.push(faceB);
         }
@@ -287,6 +287,29 @@ function customPlane(texture_, width_, height_, size_){
     return geometry;
     
 }
+
+function assignUVs(geometry) {
+    
+    geometry.faceVertexUvs[0] = [];
+    geometry.faces.forEach(function(face) {
+        var components = ['x', 'y', 'z'].sort(function(a, b) {
+            return Math.abs(face.normal[a]) > Math.abs(face.normal[b]);
+        });
+
+        var v1 = geometry.vertices[face.a];
+        var v2 = geometry.vertices[face.b];
+        var v3 = geometry.vertices[face.c];
+
+        geometry.faceVertexUvs[0].push([
+            new THREE.Vector2(v1[components[0]], v1[components[1]]),
+            new THREE.Vector2(v2[components[0]], v2[components[1]]),
+            new THREE.Vector2(v3[components[0]], v3[components[1]])
+        ]);
+
+    });
+    geometry.uvsNeedUpdate = true;
+}
+
 
 function setHeight(value_){
     
@@ -309,11 +332,16 @@ function init(texture_, size_) {
     var divHeight= $("#content").height() * 1.975;
         
     container = document.getElementById( 'container' );
-
+    
     camera = new THREE.CombinedCamera( divWidth / 2, divHeight / 2, 60, 1, 1500, -1500, 1500 );
     camera.lookAt( new THREE.Vector3(0.0, 0.0, 0.0) );
     
     scene = new THREE.Scene();
+ 
+    //lights
+    var dirLight = new THREE.DirectionalLight(0xffffff, 1);
+    dirLight.position.set(100, 100, 50);
+    scene.add(dirLight);
 
     camera.position.y = 250;
     
@@ -377,22 +405,48 @@ function init(texture_, size_) {
 
     } );
 
-    //plane
-    var material = new THREE.MeshBasicMaterial({ vertexColors: THREE.VertexColors, side: THREE.DoubleSide });
-    var geometry = customPlane(texture_, texture_.image.width, texture_.image.height, size_);
-
+    var loader2 = new THREE.TextureLoader();
+    
+    
+    loader2.load(
+    // resource URL
+    'assets/texture.jpg',
+    // Function when resource is loaded
+    function ( texture ) {
+        // do something with the texture
+    texture.wrapS = THREE.RepeatWrapping;
+    texture.wrapT = THREE.RepeatWrapping;
+    texture.repeat.set( 0.05, 0.05 );
+        
+    var material = new THREE.MeshPhongMaterial({ map: texture, side: THREE.DoubleSide });
+    var geometry = customPlane(texture_, texture_.image.width * 2, texture_.image.height * 2, 128);
+    //var geometry = new THREE.PlaneBufferGeometry(2000, 2000, 8, 8);
+        
     geometry.verticesNeedUpdate = true;
     geometry.normalsNeedUpdate = true;
     
     geometry.computeVertexNormals();
     geometry.computeFaceNormals();
     
+    assignUVs(geometry);
+        
     plane = new THREE.Mesh(geometry, material);
-    //plane.receiveShadow = true;
-    
+    plane.receiveShadow = true;
+
     octree.importThreeMesh( plane );
     tpsCameraControl.rigidObjects.push( plane );
     scene.add(plane);
+        
+    },
+    // Function called when download progresses
+    function ( xhr ) {
+        console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
+    },
+    // Function called when download errors
+    function ( xhr ) {
+        console.log( 'An error happened' );
+    }
+    );
 
     $( "#loading" ).hide();
     console.log("Done");
